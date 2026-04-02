@@ -4,6 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>El Faro - Periódico Local</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
     <style>
       body {
         font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
@@ -104,10 +107,7 @@
   </head>
   <body>
     <header>
-      <img
-        src="assets/faro_gif.gif"
-        alt="Logotipo de El Faro"
-      />
+      <img src="assets/faro_gif.gif" alt="Logotipo de El Faro" />
       <h1>EL FARO</h1>
       <p>Tu luz en la información local</p>
     </header>
@@ -171,14 +171,18 @@
 
       <div class="media-container">
         <h3>Reportaje Especial (Video)</h3>
-        <iframe
-          width="862px"
-          height="480px"
-          src="assets/video.mp4?autoplay=0"
+        <video
+          src="assets/video.mp4"
           title="AIEP Reportaje"
-          frameborder="0"
-          allowfullscreen
-        ></iframe>
+          controls
+          style="
+            width: 100%;
+            max-width: 862px;
+            aspect-ratio: 16/9;
+            background-color: #000;
+            border-radius: 4px;
+          "
+        ></video>
       </div>
 
       <div class="media-container">
@@ -190,6 +194,31 @@
           />
           Tu navegador no soporta el formato de audio.
         </audio>
+      </div>
+
+      <div class="media-container">
+        <h3>T13 - Canal 13 (Señal en Vivo)</h3>
+        <div
+          style="
+            width: 100%;
+            max-width: 862px;
+            aspect-ratio: 16/9;
+            margin: 0 auto;
+            background-color: #000;
+            border-radius: 4px;
+            overflow: hidden;
+          "
+        >
+          <iframe
+            src="https://rudo.video/live/c13?autostart=0"
+            width="100%"
+            height="100%"
+            frameborder="0"
+            allow="autoplay; fullscreen"
+            style="border: none"
+          >
+          </iframe>
+        </div>
       </div>
     </section>
 
@@ -287,5 +316,27 @@
         &copy; 2024 El Faro Periódico Digital. Todos los derechos reservados.
       </p>
     </footer>
+
+    <script>
+      const videoMega = document.getElementById("video-meganoticias");
+
+      // Enlace .m3u8 abierto para saltar los bloqueos de desarrollo local
+      const videoSrc =
+        "https://ythls.starnix.network/channel/UCkccyEbqhhM3uKOI6Shm-4Q.m3u8";
+
+      if (Hls.isSupported()) {
+        const hls = new Hls();
+        hls.loadSource(videoSrc);
+        hls.attachMedia(videoMega);
+        hls.on(Hls.Events.MANIFEST_PARSED, function () {
+          videoMega.play().catch((e) => console.log("Dale play manualmente"));
+        });
+      } else if (videoMega.canPlayType("application/vnd.apple.mpegurl")) {
+        videoMega.src = videoSrc;
+        videoMega.addEventListener("loadedmetadata", function () {
+          videoMega.play();
+        });
+      }
+    </script>
   </body>
 </html>
